@@ -12,7 +12,13 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "setup-db": "docker compose up",
+    "typeorm:cli": "typeorm-ts-node-commonjs -d ./src/orm-config.ts",
+    "migration:generate": "npm run typeorm:cli migration:generate -- src/migrations/init",
+    "migration:run": "npm run typeorm:cli -- migration:run",
+    "migration:revert": "npm run typeorm:cli -- migration:revert",
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/@jorgebodega/typeorm-seeding/dist/cli.js seed -d src/seeder-data-source.ts ./src/common/seeders/*.ts"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
