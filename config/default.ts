@@ -9,13 +9,13 @@ const config: DeepNullable<ConfigType> = {
     host: 'localhost',
     username: 'postgres',
     password: 'postgres',
-    database: 'shop-aw',
+    database: 'organization-aw',
     port: 5433,
-    logging: false,
+    logging: true,
     synchronize: false,
     migrationsRun: true,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    migrations: ['./dist/migrations/*{.ts,.js}'],
+    migrations: ['./dist/src/migrations/*{.ts,.js}'],
   },
 };
 export default config;
