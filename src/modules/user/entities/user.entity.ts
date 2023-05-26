@@ -1,33 +1,51 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
+  BeforeInsert,
+  BeforeUpdate,
   Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import bcrypt from 'bcrypt';
+import { RolesEnum } from '../../../common/enums/roles.enum';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true, type: 'varchar' })
+  bossId: string;
+
+  @Column('varchar')
   email: string;
 
-  @Column()
+  @Column('varchar')
   password: string;
 
-  @Column()
-  role: string;
+  @Column({ type: 'enum', enum: RolesEnum })
+  role: RolesEnum;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.subordinates)
   @JoinColumn({ name: 'bossId' })
   boss: User;
 
-  @Column({ nullable: true })
-  bossId: string;
-
-  @OneToMany(() => User, (user) => user.boss)
+  @OneToMany(() => User, (user) => user.boss, { eager: true })
   subordinates: User[];
+
+  @BeforeInsert()
+  async beforeInsert(): Promise<void> {
+    this.password = await bcrypt.hash(this.password, 10);
+    this.role = this.role || RolesEnum.User;
+  }
 }

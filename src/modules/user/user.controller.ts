@@ -1,43 +1,41 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SignInUserDto } from '~/modules/user/dto/sign-in-user.dto';
+import { RolesGuard } from '../../common/middlewares/guards/roles.guard';
+import { LoginUserDto } from './dto/login-user.dto';
+import { UserDataDto } from './dto/user-data.dto';
+import { AuthGuard } from '../../common/middlewares/guards/auth.guard';
+import { UserSessionType } from '../../common/types/common.types';
+import { User } from './entities/user.entity';
+import { RolesDecorator } from '../../common/decorators/roles.decorator';
+import { RolesEnum } from '../../common/enums/roles.enum';
 
+@UseGuards(RolesGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create')
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto): Promise<void> {
     return this.userService.create(createUserDto);
   }
 
-  @Post('sign-in')
-  signIn(@Body() signInUserDto: SignInUserDto) {
-    return this.userService.signIn(signInUserDto);
+  @Post('login')
+  async login(@Body() signInUserDto: LoginUserDto, @Session() session: Record<string, any>): Promise<UserDataDto> {
+    return this.userService.login(signInUserDto, session);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Session() { userData }: UserSessionType): Promise<User[]> {
+    return this.userService.findAll(userData);
   }
 
+  @RolesDecorator(RolesEnum.Admin, RolesEnum.Boss)
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
   }
 }

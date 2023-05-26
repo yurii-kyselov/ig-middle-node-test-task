@@ -1,9 +1,9 @@
 import { JoiSchema, JoiSchemaOptions } from 'nestjs-joi';
-import { defaultRequestSchemaOptions } from '~/common/validation/common.schema';
-import { signInUserValidationSchema } from '~/common/validation/user.schema';
+import { defaultRequestSchemaOptions } from '../../../common/validation/common.schema';
+import { signInUserValidationSchema } from '../../../common/validation/user.schema';
 
 @JoiSchemaOptions(defaultRequestSchemaOptions)
-export class SignInUserDto {
+export class LoginUserDto {
   @JoiSchema(signInUserValidationSchema.email)
   email: string;
 

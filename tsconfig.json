@@ -21,7 +21,6 @@
     "noFallthroughCasesInSwitch": false,
     "lib": ["ES2021.String"],
     "paths": {
-      "~/*": ["src/*"],
       "*": ["src/common/@types/*", "../../@types/*"],
     }
   }

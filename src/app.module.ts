@@ -10,8 +10,7 @@ import config from 'config';
     UserModule,
     TypeOrmModule.forRootAsync({
       useFactory: (): DataSourceOptions => config.typeorm,
-      dataSourceFactory: async (dataSourceConfig) =>
-        await new DataSource(dataSourceConfig).initialize(),
+      dataSourceFactory: async (dataSourceConfig) => await new DataSource(dataSourceConfig).initialize(),
     }),
     JoiPipeModule.forRoot(),
   ],

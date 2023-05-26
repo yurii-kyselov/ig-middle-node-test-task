@@ -1,5 +1,5 @@
 import Joi, { ValidationOptions } from 'joi';
-import { passwordRegEx } from '~/common/validation/regex/common.regex';
+import { passwordRegEx } from './regex/common.regex';
 
 export const defaultRequestSchemaOptions: ValidationOptions = {
   abortEarly: true,
