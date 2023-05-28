@@ -33,7 +33,6 @@ export class UserController {
 
   @Post('login')
   async login(@Body() signInUserDto: LoginUserDto, @Session() session: Record<string, any>): Promise<UserDataDto> {
-    console.log('login');
     return this.userService.login(signInUserDto, session);
   }
 

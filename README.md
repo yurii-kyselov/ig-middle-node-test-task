@@ -20,5 +20,6 @@ $ npm run setup-db
 $ npm run start:dev
 
 # to seed db (it creates admin, so strongly recommended to run seeder)
+# default passwords and emails could be found in src/common/seeders/users.seeder.ts
 $ npm run seed:run
 ```
