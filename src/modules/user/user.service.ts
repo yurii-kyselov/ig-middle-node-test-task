@@ -25,11 +25,7 @@ export class UserService {
       email: createUserDto.email.toLowerCase(),
     });
 
-    try {
-      await this.userRepository.save(user);
-    } catch (e) {
-      throw e;
-    }
+    await this.userRepository.save(user);
   }
   async login(signInUserDto: LoginUserDto, session: Record<string, any>): Promise<UserDataDto> {
     const user = await this.userRepository.findOne({
