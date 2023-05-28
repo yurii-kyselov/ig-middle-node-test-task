@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { User } from './entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -55,7 +55,34 @@ export class UserService {
       : await this.userRepository.find({ where: { email } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(userData: UserDataDto, updateUserDto: UpdateUserDto): Promise<void> {
+    const { email, role } = userData;
+    const { newBossEmail, subordinatesEmails } = updateUserDto;
+
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    const userSubordinatesEmails = user.subordinates.map((subordinate) => subordinate.email);
+
+    if (
+      role != RolesEnum.Admin ||
+      (!userSubordinatesEmails.includes(newBossEmail) &&
+        !subordinatesEmails.every((email) => userSubordinatesEmails.includes(email)))
+    ) {
+      throw new ForbiddenException('Forbidden action');
+    }
+
+    const newBoss = await this.userRepository.findOne({ where: { email: newBossEmail } });
+
+    const newSubordinates = await this.userRepository.find({ where: { email: In(subordinatesEmails) } });
+
+    if (!newBoss || newSubordinates.length != subordinatesEmails.length) {
+      throw new ForbiddenException('Forbidden action');
+    }
+
+    newBoss.role = RolesEnum.Boss;
+
+    newSubordinates.forEach((subordinate) => (subordinate.bossId = newBoss.id));
+
+    await this.userRepository.save([newBoss, ...newSubordinates]);
   }
 }

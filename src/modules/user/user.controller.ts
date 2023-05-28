@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Session, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -34,8 +34,8 @@ export class UserController {
 
   @RolesDecorator(RolesEnum.Admin, RolesEnum.Boss)
   @UseGuards(AuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Patch()
+  update(@Session() { userData }: UserSessionType, @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(userData, updateUserDto);
   }
 }

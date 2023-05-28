@@ -1,6 +1,5 @@
 import {
   BeforeInsert,
-  BeforeUpdate,
   Column,
   CreateDateColumn,
   Entity,
@@ -21,7 +20,7 @@ export class User {
   @Column({ nullable: true, type: 'varchar' })
   bossId: string;
 
-  @Column('varchar')
+  @Column({ type: 'varchar', unique: true })
   email: string;
 
   @Column('varchar')
