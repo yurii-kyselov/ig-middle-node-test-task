@@ -11,8 +11,6 @@
 $ npm install
 
 $ npm run setup-db
-
-$ npm run migration:generate
 ```
 
 ## Running the app
