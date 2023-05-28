@@ -6,6 +6,6 @@ import { IObject } from '../../types/common.types';
 @Injectable()
 export class ResponseTransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<IObject> {
-    return next.handle().pipe(map((data) => ({ requestObject: data || '', message: null })));
+    return next.handle().pipe(map((data) => ({ data: data || '', error: null })));
   }
 }

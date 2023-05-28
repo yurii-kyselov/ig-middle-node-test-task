@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Patch, Post, Session, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Session,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -23,12 +33,14 @@ export class UserController {
 
   @Post('login')
   async login(@Body() signInUserDto: LoginUserDto, @Session() session: Record<string, any>): Promise<UserDataDto> {
+    console.log('login');
     return this.userService.login(signInUserDto, session);
   }
 
   @UseGuards(AuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  findAll(@Session() { userData }: UserSessionType): Promise<User[]> {
+  findAll(@Session() { userData }: UserSessionType): Promise<User[] | User> {
     return this.userService.findAll(userData);
   }
 

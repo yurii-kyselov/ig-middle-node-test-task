@@ -18,7 +18,8 @@ async function bootstrap() {
     session({
       secret: config.sessionSecret,
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
+      cookie: { maxAge: 3600000 },
     }),
   );
 

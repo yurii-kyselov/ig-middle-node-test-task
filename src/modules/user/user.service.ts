@@ -47,26 +47,54 @@ export class UserService {
     return userData;
   }
 
-  async findAll(userData: UserDataDto): Promise<User[]> {
+  async findAll(userData: UserDataDto): Promise<User[] | User> {
     const { email, role } = userData;
+
+    if (role === RolesEnum.Boss) {
+      const boss = await this.userRepository.findOne({
+        where: { email },
+        relations: { subordinates: true },
+      });
+
+      await this.loadSubordinates(boss.subordinates);
+
+      return boss;
+    }
 
     return role === RolesEnum.Admin
       ? await this.userRepository.find()
-      : await this.userRepository.find({ where: { email } });
+      : await this.userRepository.findOne({ where: { email } });
+  }
+
+  private async loadSubordinates(subordinates: User[]): Promise<void> {
+    if (!subordinates?.length) return;
+
+    for (const subordinate of subordinates) {
+      if (subordinate.role === RolesEnum.Boss) {
+        const boss = await this.userRepository.findOne({
+          where: { email: subordinate.email },
+          relations: { subordinates: true },
+        });
+
+        subordinate.subordinates = boss.subordinates;
+
+        await this.loadSubordinates(boss.subordinates);
+      }
+    }
   }
 
   async update(userData: UserDataDto, updateUserDto: UpdateUserDto): Promise<void> {
     const { email, role } = userData;
     const { newBossEmail, subordinatesEmails } = updateUserDto;
 
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOne({ where: { email }, relations: { subordinates: true } });
 
     const userSubordinatesEmails = user.subordinates.map((subordinate) => subordinate.email);
 
     if (
-      role != RolesEnum.Admin ||
-      (!userSubordinatesEmails.includes(newBossEmail) &&
-        !subordinatesEmails.every((email) => userSubordinatesEmails.includes(email)))
+      role != RolesEnum.Admin &&
+      !userSubordinatesEmails.includes(newBossEmail) &&
+      !subordinatesEmails.every((email) => userSubordinatesEmails.includes(email))
     ) {
       throw new ForbiddenException('Forbidden action');
     }

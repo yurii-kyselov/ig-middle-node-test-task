@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { RolesEnum } from '../../../common/enums/roles.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User {
@@ -23,7 +24,8 @@ export class User {
   @Column({ type: 'varchar', unique: true })
   email: string;
 
-  @Column('varchar')
+  @Exclude()
+  @Column({ type: 'varchar' })
   password: string;
 
   @Column({ type: 'enum', enum: RolesEnum })
@@ -39,7 +41,7 @@ export class User {
   @JoinColumn({ name: 'bossId' })
   boss: User;
 
-  @OneToMany(() => User, (user) => user.boss, { eager: true })
+  @OneToMany(() => User, (user) => user.boss)
   subordinates: User[];
 
   @BeforeInsert()

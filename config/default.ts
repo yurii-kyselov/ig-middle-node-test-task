@@ -11,7 +11,7 @@ const config: DeepNullable<ConfigType> = {
     password: 'postgres',
     database: 'organization-aw',
     port: 5433,
-    logging: true,
+    logging: false,
     synchronize: false,
     migrationsRun: true,
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
